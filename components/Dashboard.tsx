@@ -182,7 +182,6 @@ export default function Dashboard() {
                                   <h3 className="text-lg font-semibold text-blue-900">
                                     {course.title}
                                   </h3>
-                                  <p className="text-sm text-blue-600">{course.category}</p>
                                 </div>
                                 <div className="flex items-center text-sm text-blue-600">
                                   <Clock className="h-4 w-4 mr-1" />
@@ -192,7 +191,7 @@ export default function Dashboard() {
                               <Progress value={course.progress} className="mt-2" />
                               <div className="mt-2 flex items-center justify-between">
                                 <span className="text-sm text-blue-600">
-                                  Next: {course.nextLesson}
+                                  {course.category}
                                 </span>
                                 <Link href={`http://localhost:8000/api/courses/${course.id}/content`}>
                                   <Button variant="outline" size="sm">
