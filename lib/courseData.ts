@@ -2,6 +2,7 @@
 export interface Course {
     id: number;
     title: string;
+    category: string;
     progress: number;
     icon: string;
     color: string;
@@ -15,6 +16,7 @@ export interface Course {
     {
       id: 1,
       title: 'Advanced Cardiology',
+      category: 'Advanced Cardiology',
       progress: 75,
       icon: 'Heart',
       color: 'text-red-500',
@@ -26,6 +28,7 @@ export interface Course {
     {
       id: 2,
       title: 'Neurology Essentials',
+      category: 'Neurology Essentials',
       progress: 30,
       icon: 'Brain',
       color: 'text-purple-500',
@@ -37,6 +40,7 @@ export interface Course {
     {
       id: 3,
       title: 'Emergency Medicine',
+      category: 'Emergency Medicine',
       progress: 0,
       icon: 'Syringe',
       color: 'text-yellow-500',
@@ -48,6 +52,7 @@ export interface Course {
     {
       id: 4,
       title: 'Clinical Microbiology',
+      category: 'Clinical Microbiology',
       progress: 50,
       icon: 'Microscope',
       color: 'text-green-500',

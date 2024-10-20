@@ -1,3 +1,6 @@
+"components\Dashboard.tsx"
+'use client';
+
 import React from 'react';
 import { 
   Bell, 
@@ -33,10 +36,12 @@ import {
 } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link'; // Import Link for navigation
+import { useEffect, useState } from 'react';
 
 interface Course {
-  id: number;
+  id: string|number;
   title: string;
+  category: string;
   progress: number;
   icon: typeof Heart;
   color: string;
@@ -45,69 +50,62 @@ interface Course {
   duration?: string;
 }
 
-const courses: Course[] = [
-  { 
-    id: 1, 
-    title: 'Advanced Cardiology', 
-    progress: 75, 
-    icon: Heart, 
-    color: 'text-red-500', 
-    bgColor: 'bg-red-100',
-    nextLesson: 'ECG Interpretation',
-    duration: '2h remaining'
-  },
-  { 
-    id: 2, 
-    title: 'Neurology Essentials', 
-    progress: 30, 
-    icon: Brain, 
-    color: 'text-purple-500', 
-    bgColor: 'bg-purple-100',
-    nextLesson: 'Brain Anatomy',
-    duration: '4h remaining'
-  },
-  { 
-    id: 3, 
-    title: 'Emergency Medicine', 
-    progress: 0, 
-    icon: Syringe, 
-    color: 'text-yellow-500', 
-    bgColor: 'bg-yellow-100',
-    nextLesson: 'Introduction',
-    duration: '6h total'
-  },
-  { 
-    id: 4, 
-    title: 'Clinical Microbiology', 
-    progress: 50, 
-    icon: Microscope, 
-    color: 'text-green-500', 
-    bgColor: 'bg-green-100',
-    nextLesson: 'Bacterial Cultures',
-    duration: '3h remaining'
-  },
-];
-
-const upcomingEvents = [
-  { 
-    id: 1, 
-    title: 'Cardiology Webinar', 
-    date: 'May 15, 2024', 
-    time: '2:00 PM',
-    type: 'Webinar',
-    credits: 2
-  },
-  { 
-    id: 2, 
-    title: 'Neurology Conference', 
-    date: 'June 3, 2024', 
-    time: '9:00 AM',
-    type: 'Conference',
-    credits: 4
-  },
-];
-
 export default function Dashboard() {
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/courses');
+        if (!response.ok) {
+          throw new Error('Failed to fetch courses');
+        }
+        const data = await response.json();
+        console.log(data);
+        setCourses(data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+        // Optionally, set an error state or show a notification to the user
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const upcomingEvents = [
+    { 
+      id: 1, 
+      title: 'Cardiology Webinar', 
+      date: 'May 15, 2024', 
+      time: '2:00 PM',
+      type: 'Webinar',
+      credits: 2
+    },
+    { 
+      id: 2, 
+      title: 'Neurology Conference', 
+      date: 'June 3, 2024', 
+      time: '9:00 AM',
+      type: 'Conference',
+      credits: 4
+    },
+  ];
+
+  const getCourseIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'cardiology':
+        return Heart;
+      case 'neurology':
+        return Brain;
+      case 'emergency medicine':
+        return Syringe;
+      case 'gynecology':
+        return Microscope;
+      default:
+        return BookOpen;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Navigation */}
@@ -168,38 +166,46 @@ export default function Dashboard() {
                 </TabsList>
                 <TabsContent value="current">
                   <div className="grid gap-4 mt-4">
-                    {courses.map((course) => (
-                      <Link key={course.id} href={`/course/${course.id}`}>
-                        <div 
-                          className="flex items-center p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 transition-colors cursor-pointer"
-                        >
-                          <div className={`p-3 rounded-full mr-4 ${course.bgColor}`}>
-                            <course.icon className={`h-6 w-6 ${course.color}`} />
-                          </div>
-                          <div className="flex-grow">
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-lg font-semibold text-blue-900">
-                                {course.title}
-                              </h3>
-                              <div className="flex items-center text-sm text-blue-600">
-                                <Clock className="h-4 w-4 mr-1" />
-                                {course.duration}
+                    {courses.map((course) => {
+                      const IconComponent = getCourseIcon(course.category);
+                      return (
+                        <Link key={course.id} href={`/course/${course.id}`}>
+                          <div 
+                            className="flex items-center p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 transition-colors cursor-pointer"
+                          >
+                            <div className={`p-3 rounded-full mr-4 ${course.bgColor}`}>
+                              <IconComponent className={`h-6 w-6 ${course.color}`} />
+                            </div>
+                            <div className="flex-grow">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-blue-900">
+                                    {course.title}
+                                  </h3>
+                                  <p className="text-sm text-blue-600">{course.category}</p>
+                                </div>
+                                <div className="flex items-center text-sm text-blue-600">
+                                  <Clock className="h-4 w-4 mr-1" />
+                                  {course.duration}
+                                </div>
+                              </div>
+                              <Progress value={course.progress} className="mt-2" />
+                              <div className="mt-2 flex items-center justify-between">
+                                <span className="text-sm text-blue-600">
+                                  Next: {course.nextLesson}
+                                </span>
+                                <Link href={`http://localhost:8000/api/courses/${course.id}/content`}>
+                                  <Button variant="outline" size="sm">
+                                    Continue
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                  </Button>
+                                </Link>
                               </div>
                             </div>
-                            <Progress value={course.progress} className="mt-2" />
-                            <div className="mt-2 flex items-center justify-between">
-                              <span className="text-sm text-blue-600">
-                                Next: {course.nextLesson}
-                              </span>
-                              <Button variant="outline" size="sm">
-                                Continue
-                                <ChevronRight className="ml-2 h-4 w-4" />
-                              </Button>
-                            </div>
                           </div>
-                        </div>
-                      </Link>
-                    ))}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </TabsContent>
                 <TabsContent value="recommended">

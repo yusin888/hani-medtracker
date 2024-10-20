@@ -1,3 +1,5 @@
+"components\CourseDetailView.tsx"
+
 import React from 'react';
 import { 
   ArrowLeft,
@@ -38,7 +40,7 @@ import {
 
 // Define Course type here
 interface Course {
-    id: number;
+    id: string|number;
     title: string;
     progress: number;
     icon: string;
@@ -46,7 +48,7 @@ interface Course {
     bgColor: string;
     duration: string;          // Add duration property
     enrolledCount: number;     // Add enrolledCount property
-    rating: number;            // Add rating property
+    rating: string|number;            // Add rating property
 }
 
 interface Module {
