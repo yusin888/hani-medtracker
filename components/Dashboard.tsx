@@ -38,20 +38,46 @@ import { Badge } from "@/components/ui/badge";
 import Link from 'next/link'; // Import Link for navigation
 import { useEffect, useState } from 'react';
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 interface Course {
-  id: string|number;
+  id: number;
   title: string;
-  category: string;
+  categoryId: number;
+  categoryName: string;
   progress: number;
-  icon: typeof Heart;
+  icon: string;
   color: string;
   bgColor: string;
-  nextLesson?: string;
-  duration?: string;
+  duration: string;
+  enrolledCount: number;
+  rating: string;
+  nextLesson: number | null;
 }
 
 export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -61,11 +87,9 @@ export default function Dashboard() {
           throw new Error('Failed to fetch courses');
         }
         const data = await response.json();
-        console.log(data);
         setCourses(data);
       } catch (error) {
         console.error('Error fetching courses:', error);
-        // Optionally, set an error state or show a notification to the user
       }
     };
 
@@ -152,6 +176,20 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Categories
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-blue-900 mb-4">Categories</h2>
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+            {categories.map((category) => (
+              <Link key={category.id} href={`/category/${category.id}`}>
+                <div className="p-4 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors cursor-pointer">
+                  <h3 className="text-lg font-semibold text-blue-800">{category.name}</h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div> */}
+
         {/* Course Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="col-span-2 border-blue-200 shadow-lg">
@@ -167,7 +205,7 @@ export default function Dashboard() {
                 <TabsContent value="current">
                   <div className="grid gap-4 mt-4">
                     {courses.map((course) => {
-                      const IconComponent = getCourseIcon(course.category);
+                      const IconComponent = getCourseIcon(course.categoryName);
                       return (
                         <Link key={course.id} href={`/course/${course.id}`}>
                           <div 
@@ -191,7 +229,7 @@ export default function Dashboard() {
                               <Progress value={course.progress} className="mt-2" />
                               <div className="mt-2 flex items-center justify-between">
                                 <span className="text-sm text-blue-600">
-                                  {course.category}
+                                  {course.categoryName}
                                 </span>
                                 <Link href={`http://localhost:8000/api/courses/${course.id}/content`}>
                                   <Button variant="outline" size="sm">
