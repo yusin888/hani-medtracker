@@ -38,46 +38,15 @@ import { Badge } from "@/components/ui/badge";
 import Link from 'next/link'; // Import Link for navigation
 import { useEffect, useState } from 'react';
 
-interface Category {
-  id: number;
-  name: string;
-}
-
 interface Course {
   id: number;
-  title: string;
-  categoryId: number;
-  categoryName: string;
+  name: string;
   progress: number;
-  icon: string;
-  color: string;
-  bgColor: string;
   duration: string;
-  enrolledCount: number;
-  rating: string;
-  nextLesson: number | null;
 }
 
 export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/categories');
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -205,20 +174,20 @@ export default function Dashboard() {
                 <TabsContent value="current">
                   <div className="grid gap-4 mt-4">
                     {courses.map((course) => {
-                      const IconComponent = getCourseIcon(course.categoryName);
+                      const IconComponent = getCourseIcon(course.name);
                       return (
                         <Link key={course.id} href={`/course/${course.id}`}>
                           <div 
                             className="flex items-center p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 transition-colors cursor-pointer"
                           >
-                            <div className={`p-3 rounded-full mr-4 ${course.bgColor}`}>
-                              <IconComponent className={`h-6 w-6 ${course.color}`} />
+                            <div className={`p-3 rounded-full mr-4 ${course.name.toLowerCase()}`}>
+                              <IconComponent className={`h-6 w-6 ${course.name.toLowerCase()}`} />
                             </div>
                             <div className="flex-grow">
                               <div className="flex items-center justify-between">
                                 <div>
                                   <h3 className="text-lg font-semibold text-blue-900">
-                                    {course.title}
+                                    {course.name}
                                   </h3>
                                 </div>
                                 <div className="flex items-center text-sm text-blue-600">
@@ -229,14 +198,12 @@ export default function Dashboard() {
                               <Progress value={course.progress} className="mt-2" />
                               <div className="mt-2 flex items-center justify-between">
                                 <span className="text-sm text-blue-600">
-                                  {course.categoryName}
+                                  {course.progress}% Complete
                                 </span>
-                                <Link href={`http://localhost:8000/api/courses/${course.id}/content`}>
-                                  <Button variant="outline" size="sm">
-                                    Continue
-                                    <ChevronRight className="ml-2 h-4 w-4" />
-                                  </Button>
-                                </Link>
+                                <Button variant="outline" size="sm">
+                                  Continue
+                                  <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
                           </div>

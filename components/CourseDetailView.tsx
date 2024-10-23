@@ -1,6 +1,6 @@
 "components\CourseDetailView.tsx"
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft,
   BookOpen,
@@ -40,20 +40,18 @@ import {
 
 // Define Course type here
 interface Course {
-    id: string|number;
-    title: string;
+    id: number;
+    name: string;
     progress: number;
-    icon: string;
-    color: string;
-    bgColor: string;
-    duration: string;          // Add duration property
-    enrolledCount: number;     // Add enrolledCount property
-    rating: string|number;            // Add rating property
+    duration: string;
 }
 
 interface Module {
   id: number;
   title: string;
+  courseId: number;
+  courseName: string;
+  progress: number;
   duration: string;
   completed: boolean;
   type: 'video' | 'reading' | 'quiz';
@@ -65,33 +63,24 @@ interface CourseDetailViewProps {
 }
 
 export default function CourseDetailView({ course }: CourseDetailViewProps) {
-  const courseModules: Module[] = [
-    { 
-      id: 1, 
-      title: 'Introduction to Advanced Cardiology',
-      duration: '45 min',
-      completed: true,
-      type: 'video',
-      description: 'Overview of advanced cardiac concepts and course objectives'
-    },
-    { 
-      id: 2, 
-      title: 'Cardiac Imaging Techniques',
-      duration: '30 min',
-      completed: false,
-      type: 'reading',
-      description: 'Detailed explanation of cardiac imaging techniques including MRI and CT scans'
-    },
-    { 
-      id: 3, 
-      title: 'Electrophysiology Basics',
-      duration: '25 min',
-      completed: false,
-      type: 'quiz',
-      description: 'Test your knowledge of electrophysiology basics and principles'
-    },
-    // More modules can be added here
-  ];
+  const [modules, setModules] = useState<Module[]>([]);
+
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/modules/course/${course.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch modules');
+        }
+        const data = await response.json();
+        setModules(data);
+      } catch (error) {
+        console.error('Error fetching modules:', error);
+      }
+    };
+
+    fetchModules();
+  }, [course.id]);
 
   const resources = [
     { 
@@ -130,7 +119,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
+              <Link href="/">
                 <Button variant="ghost" size="sm" className="text-blue-600">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
@@ -151,7 +140,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
         <div className="mb-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-blue-900">{course.title}</h1>
+              <h1 className="text-3xl font-bold text-blue-900">{course.name}</h1>
               <div className="flex items-center mt-2 space-x-4">
                 <div className="flex items-center text-blue-600">
                   <Clock className="h-4 w-4 mr-2" />
@@ -184,7 +173,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {courseModules.map((module) => (
+                  {modules.map((module) => (
                     <TooltipProvider key={module.id}>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -208,13 +197,15 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
                                 </p>
                               </div>
                             </div>
-                            <Button 
-                              variant={module.completed ? "secondary" : "default"} 
-                              size="sm"
-                              className="ml-4"
-                            >
-                              {module.completed ? 'Review' : 'Start'}
-                            </Button>
+                            <Link href={`http://localhost:8000/api/modules/${module.id}/content`}>
+                              <Button 
+                                variant={module.completed ? "secondary" : "default"} 
+                                size="sm"
+                                className="ml-4"
+                              >
+                                {module.completed ? 'Review' : 'Start'}
+                              </Button>
+                            </Link>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -265,7 +256,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
                         </div>
                       </div>
                       <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
+                        View
                       </Button>
                     </div>
                   ))}

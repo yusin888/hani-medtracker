@@ -4,6 +4,9 @@
 import { useParams } from 'next/navigation';
 import CourseDetailView from '@/components/CourseDetailView';
 import { useCourseContext } from '@/contexts/CourseContext';
+import { Course as ContextCourse } from '@/lib/courseData';
+
+type ViewCourse = ContextCourse & { name: string };
 
 export default function CourseDetail() {
   const params = useParams();
@@ -13,5 +16,10 @@ export default function CourseDetail() {
 
   if (!course) return <div>Loading...</div>;
 
-  return <CourseDetailView course={course} />;
+  const viewCourse: ViewCourse = {
+    ...course,
+    name: course.title, // Assuming 'title' exists in ContextCourse
+  };
+
+  return <CourseDetailView course={viewCourse} />;
 }

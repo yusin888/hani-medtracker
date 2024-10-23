@@ -15,8 +15,8 @@ export interface Course {
   const courseData: Course[] = [
     {
       id: 1,
-      title: 'Advanced Cardiology',
-      category: 'Advanced Cardiology',
+      title: 'Gynecology',
+      category: 'Gynecology',
       progress: 75,
       icon: 'Heart',
       color: 'text-red-500',
@@ -27,8 +27,8 @@ export interface Course {
     },
     {
       id: 2,
-      title: 'Neurology Essentials',
-      category: 'Neurology Essentials',
+      title: 'Obstetrics',
+      category: 'Obstetrics',
       progress: 30,
       icon: 'Brain',
       color: 'text-purple-500',
