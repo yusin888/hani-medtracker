@@ -1,4 +1,3 @@
-"components\Dashboard.tsx"
 'use client';
 
 import React from 'react';
@@ -12,8 +11,11 @@ import {
   Stethoscope, 
   Syringe,
   Award,
-  Calendar,
-  Clock
+  Clock,
+  Baby,
+  Scissors,
+  Bone,
+  Calendar // Add this import
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -35,7 +37,7 @@ import {
   AvatarImage 
 } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import Link from 'next/link'; // Import Link for navigation
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 interface Course {
@@ -45,13 +47,28 @@ interface Course {
   duration: string;
 }
 
+const getIconColor = (category: string): string => {
+  switch (category.toLowerCase()) {
+    case 'surgery study':
+      return 'text-red-500';
+    case 'orthopedic study':
+      return 'text-purple-500';
+    case 'emergencies in medicine':
+      return 'text-yellow-500';
+    case 'gynecology':
+      return 'text-pink-500';
+    default:
+      return 'text-blue-500';
+  }
+};
+
 export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/courses');
+        const response = await fetch('https://backend-nu-tan.vercel.app/api/courses');
         if (!response.ok) {
           throw new Error('Failed to fetch courses');
         }
@@ -86,14 +103,20 @@ export default function Dashboard() {
 
   const getCourseIcon = (category: string) => {
     switch (category.toLowerCase()) {
+      case 'surgery study':
+        return Scissors;
+      case 'orthopedic study':
+        return Bone;
+      case 'emergencies in medicine':
+        return Syringe;
+      case 'gynecology':
+        return Microscope;
+      case 'obstetrics':
+        return Baby;
       case 'cardiology':
         return Heart;
       case 'neurology':
         return Brain;
-      case 'emergency medicine':
-        return Syringe;
-      case 'gynecology':
-        return Microscope;
       default:
         return BookOpen;
     }
@@ -107,13 +130,13 @@ export default function Dashboard() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Stethoscope className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-blue-900">
+              <span className="ml-2 text-xl font-bold text-blue-900 truncate">
                 Hani MedTracker Pro
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <BookOpen className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="hidden sm:flex">
+                <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
                 Library
               </Button>
               <Button variant="ghost" size="icon" aria-label="Notifications">
@@ -131,37 +154,23 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-blue-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-blue-900">
               Welcome back, Dr. Hani!
             </h1>
             <p className="mt-1 text-sm text-blue-600">
               Continue your professional development journey
             </p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
             Explore New Courses
           </Button>
         </div>
 
-        {/* Categories
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-blue-900 mb-4">Categories</h2>
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
-            {categories.map((category) => (
-              <Link key={category.id} href={`/category/${category.id}`}>
-                <div className="p-4 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors cursor-pointer">
-                  <h3 className="text-lg font-semibold text-blue-800">{category.name}</h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div> */}
-
         {/* Course Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="col-span-2 border-blue-200 shadow-lg">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="col-span-1 md:col-span-2 border-blue-200 shadow-lg">
             <CardHeader className="border-b border-blue-100">
               <CardTitle className="text-blue-800">Your Courses</CardTitle>
             </CardHeader>
@@ -175,34 +184,31 @@ export default function Dashboard() {
                   <div className="grid gap-4 mt-4">
                     {courses.map((course) => {
                       const IconComponent = getCourseIcon(course.name);
+                      const iconColor = getIconColor(course.name);
                       return (
                         <Link key={course.id} href={`/course/${course.id}`}>
-                          <div 
-                            className="flex items-center p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 transition-colors cursor-pointer"
-                          >
-                            <div className={`p-3 rounded-full mr-4 ${course.name.toLowerCase()}`}>
-                              <IconComponent className={`h-6 w-6 ${course.name.toLowerCase()}`} />
+                          <div className="flex items-center p-4 bg-white rounded-lg border border-blue-100 hover:border-blue-300 transition-colors cursor-pointer">
+                            <div className={`p-3 rounded-full mr-4 ${iconColor.replace('text-', 'bg-').replace('500', '100')}`}>
+                              <IconComponent className={`h-6 w-6 ${iconColor}`} />
                             </div>
-                            <div className="flex-grow">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <h3 className="text-lg font-semibold text-blue-900">
-                                    {course.name}
-                                  </h3>
-                                </div>
-                                <div className="flex items-center text-sm text-blue-600">
+                            <div className="flex-grow min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                                <h3 className="text-lg font-semibold text-blue-900 truncate mb-2 sm:mb-0">
+                                  {course.name}
+                                </h3>
+                                <div className="flex items-center text-sm text-blue-600 whitespace-nowrap">
                                   <Clock className="h-4 w-4 mr-1" />
                                   {course.duration}
                                 </div>
                               </div>
                               <Progress value={course.progress} className="mt-2" />
-                              <div className="mt-2 flex items-center justify-between">
+                              <div className="mt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
                                 <span className="text-sm text-blue-600">
                                   {course.progress}% Complete
                                 </span>
                                 <Button variant="outline" size="sm">
                                   Continue
-                                  <ChevronRight className="ml-2 h-4 w-4" />
+                                  <ChevronRight className="ml-2 h-4 w-4 text-blue-600" />
                                 </Button>
                               </div>
                             </div>
@@ -244,11 +250,10 @@ export default function Dashboard() {
                 </div>
               </div>
               <p className="mt-4 text-sm text-center text-blue-600">
-                You're 48% of the way to your CME requirement
+                You&apos;re making great progress!
               </p>
             </CardContent>
           </Card>
-
         </div>
 
         {/* Upcoming Events */}
@@ -259,10 +264,11 @@ export default function Dashboard() {
           <CardContent>
             <div className="divide-y divide-blue-200">
               {upcomingEvents.map((event) => (
-                <div key={event.id} className="py-3 flex justify-between items-center">
+                <div key={event.id} className="py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
                   <div>
                     <h4 className="text-blue-900 font-semibold">{event.title}</h4>
                     <p className="text-sm text-blue-600">
+                      <Calendar className="inline h-4 w-4 mr-1 text-blue-500" />
                       {event.date} at {event.time}
                     </p>
                   </div>

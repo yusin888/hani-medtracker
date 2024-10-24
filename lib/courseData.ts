@@ -51,8 +51,20 @@ export interface Course {
     },
     {
       id: 4,
-      title: 'Clinical Microbiology',
-      category: 'Clinical Microbiology',
+      title: 'Orthopedic Study',
+      category: 'Orthopedic Study',
+      progress: 50,
+      icon: 'Microscope',
+      color: 'text-green-500',
+      bgColor: 'bg-green-100',
+      duration: '2h 45m',
+      enrolledCount: 80,
+      rating: 4.1
+    },
+    {
+      id: 5,
+      title: 'Surgery Study',
+      category: 'Surgery Study',
       progress: 50,
       icon: 'Microscope',
       color: 'text-green-500',

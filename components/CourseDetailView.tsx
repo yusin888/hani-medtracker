@@ -8,11 +8,9 @@ import {
   Clock,
   Download,
   PlayCircle,
-  MessageSquare,
   Star,
   FileText,
   Video,
-  PenTool,
   Users
 } from 'lucide-react';
 import Link from 'next/link';
@@ -68,7 +66,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
   useEffect(() => {
     const fetchModules = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/modules/course/${course.id}`);
+        const response = await fetch(`https://backend-nu-tan.vercel.app/api/modules/course/${course.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch modules');
         }
@@ -197,7 +195,7 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
                                 </p>
                               </div>
                             </div>
-                            <Link href={`http://localhost:8000/api/modules/${module.id}/content`}>
+                            <Link href={`https://backend-nu-tan.vercel.app/api/modules/${module.id}/content`}>
                               <Button 
                                 variant={module.completed ? "secondary" : "default"} 
                                 size="sm"
