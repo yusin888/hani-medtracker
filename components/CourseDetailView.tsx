@@ -6,7 +6,6 @@ import {
   BookOpen,
   CheckCircle,
   Clock,
-  // Download,
   PlayCircle,
   Star,
   FileText,
